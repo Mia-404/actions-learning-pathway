@@ -7,15 +7,12 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: echo "$(cat hello_world.txt)"
-      
       - name: use node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
-          
+          node-version: '18.x'          
       - run: npm install
       - run: npm run build 
-
   test: 
     needs: build
     runs-on: ubuntu-latest
@@ -28,22 +25,19 @@ jobs:
           node-version: '18.x'
       - run: npm install
       - run: npm test
+    deploy:
+      needs: test
+      permissions:
+          contents: write
+          pages: write     
+          id-token: write  
+      environment:
+        name: production
+        url: ${{ steps.deployment.outputs.page_url }}
 
-      deploy:
-    needs: test
+      runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pages: write     
-      id-token: write  
-
-    environment:
-      name: production
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-
-    steps:
+      steps:
       - name: checkout repo
         uses: actions/checkout@v3
         with:
